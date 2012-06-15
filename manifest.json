@@ -1,0 +1,19 @@
+{
+  "name": "Copy URL nicely",
+  "version": "1.1",
+  "manifest_version": 2,
+  "description": "Extension to copy URLs to clipboard and paste them back nicely.",
+  "background": {
+    "page": "copyurl.html"
+  },  
+  "icons": {
+    "16": "copyurl16.png",
+    "48": "copyurl48.png",
+    "128": "copyurl128.png"
+  },
+  "permissions": [
+    "contextMenus",
+	"clipboardRead",
+	"tabs"
+  ]
+}
