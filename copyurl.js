@@ -25,6 +25,7 @@ function copyUrl(format,url,title) {
 }
 
 function copyUrlfindTitle(format,byurl,tabid) {
+    chrome.tabs.executeScript(tabid,{file:"content.js"});
     chrome.tabs.sendRequest(tabid, {action:"getUrlTitle", url:byurl}, function(title) {
         copyUrl(format,byurl,title);
     });

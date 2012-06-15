@@ -15,10 +15,7 @@
     "contextMenus",
 	"clipboardRead",
 	"tabs",
-	"http://*/*","https://*/*"
-  ],
-  "content_scripts": [{
-    "matches": ["http://*/*","https://*/*"],
-    "js": ["content.js"]
-  }]
+	"http://*/*",
+	"https://*/*"
+  ]
 }
