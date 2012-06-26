@@ -17,7 +17,7 @@ function copyUrl(format,url,title,screenshotUrl) {
 	} else if ( format==childHtml ) {
 		nice = "<a href='"+url+"'>"+title+"</a>";
 	} else if ( format==childHtmlScreenshot ) {
-		nice = "<a href='"+url+"'>"+title+"</a><br/><img src='"+screenshotUrl+"' width='640' height='480'/>";
+		nice = "<a href='"+url+"'>"+title+"</a><br/><img src='"+screenshotUrl+"' width='100%'/>";
 	}
     //console.log("clip " + nice);
     var selection = window.getSelection();
@@ -35,11 +35,34 @@ function copyUrlFindTitle(format,byurl,tabid) {
 
 function copyUrlWithScreenshot(format,byurl,title) {
 	var result = null;
-	//chrome.tabs.captureVisibleTab(null,{format:"png"},function(url) {
-	chrome.tabs.captureVisibleTab(null,null,function(url) {
+	chrome.tabs.captureVisibleTab(null,{format:"png"},function(url) {
+	//chrome.tabs.captureVisibleTab(null,null,function(url) {
         copyUrl(format,byurl,title,url);
 	});
 	return result;
+}
+
+/*
+function mailClipboard(title,tabid) {
+	var action_url = "mailto:?subject="+encodeURIComponent(title) + "&";
+
+	var body = document.getElementById("clipboard").innerHTML;
+    action_url += "body=" + encodeURIComponent(body);
+
+    console.log('Action url: ' + action_url);
+    chrome.tabs.create({ url: action_url }, function(tab) {
+		chrome.tabs.remove(tab.id);
+	});
+}
+*/
+function mailClipboard(title,tabid) {
+	var mail = document.getElementById("mail");
+	mail.action="mailto:?subject="+encodeURIComponent(title);
+
+	var body = document.getElementById("clipboard").innerHTML;
+	mail.elements[0].value=body;
+	
+	document.forms['mail'].submit();
 }
 
 // A generic onclick callback function.
@@ -50,13 +73,17 @@ function genericOnClick(info, tab) {
 	copyUrlFindTitle(info.menuItemId,info.linkUrl,tab.id);
 	return;
   }
-
-  if ( info.menuItemId==childHtmlScreenshot ) {
-	copyUrlWithScreenshot(info.menuItemId,tab.url,tab.title);
-	return;
-  }
   
   copyUrl(info.menuItemId,tab.url,tab.title);
+}
+
+function screenshotOnClick(info, tab) {
+  copyUrlWithScreenshot(childHtmlScreenshot,tab.url,tab.title);
+}
+
+function mailOnClick(info, tab) {
+  screenshotOnClick(info,tab);
+  mailClipboard(tab.title,tab.id);
 }
 
 // Create a parent item and two children.
@@ -67,4 +94,6 @@ var childHtml = chrome.contextMenus.create(
 var childWiki = chrome.contextMenus.create(
   {"title": "as Wiki", "parentId": parent, "onclick": genericOnClick, "contexts":contexts});
 var childHtmlScreenshot = chrome.contextMenus.create(
-  {"title": "as Html with Screenshot", "parentId": parent, "onclick": genericOnClick});
+  {"title": "as Html with Screenshot", "parentId": parent, "onclick": screenshotOnClick});
+var childMail = chrome.contextMenus.create(
+  {"title": "as Mail", "parentId": parent, "onclick": mailOnClick});
