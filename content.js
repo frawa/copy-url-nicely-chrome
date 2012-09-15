@@ -12,6 +12,23 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
             }
         }
         sendResponse(result);
+    } else if (request.action == "getSelectedUrls") {
+        var result = [];
+		var sel = window.getSelection();
+        for (var r=0; r<sel.rangeCount; r++) {
+			var range = sel.getRangeAt(r);
+			var selectionContents = range.cloneContents();		
+			var list = selectionContents.querySelectorAll('a');
+			for (var i=0; i<list.length; i++) {
+				result[i] = {
+					'url': list.item(i).href,
+					'title': list.item(i).textContent
+				};
+				console.log("FW "+list.item(i));
+			}
+		}
+		console.log("FW "+result);
+        sendResponse(result);
     } else {
         sendResponse(null);
     }
